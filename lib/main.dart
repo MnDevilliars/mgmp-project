@@ -5,17 +5,18 @@ import 'package:flutterxlayer01/features/auth/signup_screen.dart';
 import 'package:flutterxlayer01/features/pages/artists.dart';
 import 'package:flutterxlayer01/core/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../handler/shared_pref_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final String session = prefs.getString('sessionToken') ?? "";
-  runApp(MyApp(session: session));
+  SharedPrefrenceHandler pref = SharedPrefrenceHandler();
+  String sessionToken = await pref.getSessionToken();
+  runApp(MyApp(sessionToken: sessionToken.isEmpty ? "" : sessionToken));
 }
 
 class MyApp extends StatelessWidget {
-  final String session;
-  const MyApp({super.key, required  this.session});
+  final String sessionToken;
+  const MyApp({super.key, required  this.sessionToken});
 
   // This widget is the root of your application.
   @override
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      routerConfig: AppRouter(session: session).router,
+      routerConfig: AppRouter(sessionToken: sessionToken).router,
     );
   }
 }

@@ -14,14 +14,18 @@ class AppColors {
   static const Color boldText = Color(0xFF001E17); // Almost black-green
 
   // Button Colors
-  static const Color primaryButton = Color(0xFF006A4E); // Same as primary
-  static const Color secondaryButton = Color(0xFFBFD8CC); // Soft mint green
+  static const Color primaryButton = Color(0xFF006A4E);
+  static const Color secondaryButton = Color(0xFF006A4E);
+  static const Color secondaryButtonSplash = Color(0xFFB8E2D2);
   static const Color dangerButton = Color(0xFFD9534F); // For errors/warnings
+
+  // Background Colors
+  static const Color iconColor = Color(0xFFE4F9F5); // Soft gray-green tint
 
   // Border or Divider Colors
   static const Color divider = Color(0xFFCED8D2);
 
   // Accent Colors
   static const Color accent = Color(0xFF4CAF50); // Light green accent
-  static const Color warning = Color(0xFFFFC107); // Amber warning
+  static const Color warning = Color(0xFFFFC107);// Amber warning
 }

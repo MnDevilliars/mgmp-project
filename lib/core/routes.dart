@@ -3,22 +3,32 @@ import 'package:go_router/go_router.dart';
 import './/features/auth/admin_login_screen.dart';
 import './/features/auth/manager_login_screen.dart';
 import './/features/auth/signup_screen.dart';
+import './/features/auth/auth_services.dart';
 import './/features/pages/home.dart';
 import './/features/pages/artists.dart';
 import './/features/pages/dashboard.dart';
 import './/features/pages/eventmanager.dart';
 import './/features/pages/events.dart';
+import '../appcolors/app_colors.dart';
 
 class AppRouter {
   late final GoRouter router;
-  late final String session;
-  AppRouter({required this.session}) {
+  late final String sessionToken;
+  AuthServices authServices = AuthServices();
+
+  AppRouter({required this.sessionToken}) {
     router = GoRouter(
-      initialLocation: session.isEmpty ? '/dashboard' : '/admin-login',
+      initialLocation: sessionToken.isEmpty ? '/admin-login' : '/dashboard',
       routes: [
         GoRoute(path: '/', builder: (context, state) => Home()),
-        GoRoute(path: '/admin-login', builder: (context, state) => AdminLoginScreen()),
-        GoRoute(path: '/manager-login', builder: (context, state) => ManagerLoginScreen()),
+        GoRoute(
+          path: '/admin-login',
+          builder: (context, state) => AdminLoginScreen(),
+        ),
+        GoRoute(
+          path: '/manager-login',
+          builder: (context, state) => ManagerLoginScreen(),
+        ),
         GoRoute(path: '/signup', builder: (context, state) => SignUpScreen()),
 
         ShellRoute(
@@ -28,18 +38,33 @@ class AppRouter {
               appBar: AppBar(
                 backgroundColor: Colors.deepPurple,
                 title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Image.asset(
-                      'assets/images/mgmp-logo.png',
-                      height: 32,
+                    SizedBox(
+                      child: Row(
+                        children: [
+                          Image.asset('assets/images/mgmp-logo.png', height: 40),
+                          const SizedBox(width: 10),
+                          const Text(
+                            "MGMP App",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: 20),
-                    const Text(
-                      "MGMP App",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.white,
+                    TextButton(
+                      onPressed: () {
+                        debugPrint("logout clicked");
+                        authServices.logout(context, sessionToken);
+                      },
+                      child: Icon(
+                        Icons.account_circle_outlined,
+                        color: AppColors.iconColor,
+                        size: 45,
                       ),
                     ),
                   ],
@@ -55,7 +80,9 @@ class AppRouter {
                   elevation: 10,
                   selectedItemColor: Colors.white,
                   unselectedItemColor: Colors.white70,
-                  selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+                  selectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                   unselectedLabelStyle: const TextStyle(fontSize: 12),
                   currentIndex: _getIndex(location),
                   onTap: (index) {
@@ -75,20 +102,38 @@ class AppRouter {
                     }
                   },
                   items: const [
-                    BottomNavigationBarItem(icon: Icon(Icons.home), label: "Dashboard"),
-                    BottomNavigationBarItem(icon: Icon(Icons.sports_martial_arts_sharp), label: "Artists"),
-                    BottomNavigationBarItem(icon: Icon(Icons.event), label: "Events"),
-                    BottomNavigationBarItem(icon: Icon(Icons.manage_accounts_outlined), label: "EventManager"),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home),
+                      label: "Dashboard",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.sports_martial_arts_sharp),
+                      label: "Artists",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.event),
+                      label: "Events",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.manage_accounts_outlined),
+                      label: "Event Manager",
+                    ),
                   ],
                 ),
               ),
             );
           },
           routes: [
-            GoRoute(path: '/dashboard', builder: (context, state) => Dashboard()),
+            GoRoute(
+              path: '/dashboard',
+              builder: (context, state) => Dashboard(),
+            ),
             GoRoute(path: '/artists', builder: (context, state) => Artists()),
             GoRoute(path: '/events', builder: (context, state) => Events()),
-            GoRoute(path: '/event-manager', builder: (context, state) => EventManager()),
+            GoRoute(
+              path: '/event-manager',
+              builder: (context, state) => EventManager(),
+            ),
           ],
         ),
       ],

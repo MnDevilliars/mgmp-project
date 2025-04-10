@@ -1,73 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../handler/shared_pref_handler.dart';
 import './/components/my_textfield.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import './auth_services.dart';
 
 
 class AdminLoginScreen extends StatelessWidget {
   AdminLoginScreen({super.key});
-
+  final AuthServices authServices = AuthServices();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // login logic
-  Future<bool> login(String email, String pass) async{
-    try{
-      final response = await http.post(
-          Uri.parse('https://rc-mgmp.themeghalayanage.com/api/auth/sign_in'),
-          headers: <String, String>{
-            'Xen-Origin': 'gAAAAABj4fitdXGtaMIU4-VcP36xx0ylGf8mrUbBA3IV3-x0dbAbhWRVnqWUVIF62YaMar21HM-uEtg_k0cWZ7lsJ-PCpsZTgZiyevE9v95xtUaBtTPOWbc=',
-          },
-          body: jsonEncode({
-            "applicationId": "63d13582e3890f5f73468476",
-            "method": 2,
-            "username": email,
-            "password": pass,
-          })
-      );
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200 && data['status']){
-        SharedPrefrenceHandler pref = SharedPrefrenceHandler();
-        final sessionToken = data['result'][0];
-        pref.setSessionToken(sessionToken, pref.sessionToken);
-        return true;
-      };
-    } catch(e,s){
-      // handle manager failure of login
-      print("$e.");
-    }
-    return false;
-  }
-
-  // email validation
-  bool isValidEmail(String input) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$');
-    return emailRegex.hasMatch(input);
-  }
-
-  // phone number validation
-  bool isValidPhoneNumber(String input) {
-    try{
-      int phone = int.tryParse(input)??0;
-      final phoneRegex = RegExp(r'^[0-9]{10}$');
-      return phoneRegex.hasMatch(input);
-    } catch(e,s){
-      print("$e, $s");
-      return false;
-    }
-  }
-
-  void storeSession(String session) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('session', session);
-  }
-
   // handle sign in button
-  void onSubmitSignIn(BuildContext context) async {
+  void handleSubmitSignIn(BuildContext context) async {
     String email = emailController.text;
     String pass = passwordController.text;
 
@@ -78,21 +22,23 @@ class AdminLoginScreen extends StatelessWidget {
       return;
     }
 
-    if (!isValidEmail(email) && !isValidPhoneNumber(email)){
+    if (!authServices.isValidEmail(email) && !authServices.isValidPhoneNumber(email)){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please enter valid email or phone number!"))
       );
       return;
     }
 
-    final loginData = await login(email, pass);
-    if (loginData) {
-      context.go("/dashboard");
-    } else {
+    final loginData = await authServices.login(email, pass);
+
+    if (!loginData){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Invalid credentials')),
       );
+      return;
     }
+
+    context.go("/dashboard");
   }
 
 
@@ -105,9 +51,18 @@ class AdminLoginScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // logo comes here
-                // SizedBox(height: 50.0),
-                Icon(Icons.lock, color: Colors.black87, size: 72.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.lock, color: Colors.black87, size: 54.0),
+                    Column(
+                      children: [
+                        SizedBox(height: 10,),
+                        Text("Admin Login", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),),
+                      ],
+                    ),
+                  ],
+                ),
 
                 // welcome back, you've been missed!
                 SizedBox(height: 15.0),
@@ -189,7 +144,7 @@ class AdminLoginScreen extends StatelessWidget {
                         height: 60.0,
                         width: double.infinity,
                         child: TextButton(
-                          onPressed: () => onSubmitSignIn(context),
+                          onPressed: () => handleSubmitSignIn(context),
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.black,
                             shape: RoundedRectangleBorder(

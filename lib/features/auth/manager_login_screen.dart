@@ -1,61 +1,19 @@
 import 'package:flutter/material.dart';
 import './/components/my_textfield.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import './auth_services.dart';
 
 
 class ManagerLoginScreen extends StatelessWidget {
   ManagerLoginScreen({super.key});
-
+  final AuthServices authServices = AuthServices();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // login logic
-  Future<bool> login(String email, String pass) async{
-    try{
-      final response = await http.post(
-          Uri.parse('https://rc-mgmp.themeghalayanage.com/api/auth/sign_in'),
-          headers: <String, String>{
-            'Xen-Origin': 'gAAAAABj4fitdXGtaMIU4-VcP36xx0ylGf8mrUbBA3IV3-x0dbAbhWRVnqWUVIF62YaMar21HM-uEtg_k0cWZ7lsJ-PCpsZTgZiyevE9v95xtUaBtTPOWbc=',
-          },
-          body: jsonEncode({
-            "applicationId": "64cb48d0e78510babebedbc6",
-            "method": 2,
-            "username": email,
-            "password": pass,
-          })
-      );
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200 && data['status']) return true;
-    } catch(e,s){
-      // handle manager failure of login
-      print("$e.");
-    }
-    return false;
-  }
-
-  // email validation
-  bool isValidEmail(String input) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$');
-    return emailRegex.hasMatch(input);
-  }
-
-  // phone number validation
-  bool isValidPhoneNumber(String input) {
-    try{
-      int phone = int.tryParse(input)??0;
-      final phoneRegex = RegExp(r'^[0-9]{10}$');
-      return phoneRegex.hasMatch(input);
-    } catch(e,s){
-      print("$e, $s");
-      return false;
-    }
-  }
 
   // handle sign in button
-  void onSubmitSignIn(BuildContext context) async {
-    print("login btn clicked");
+  void handleSubmitSignIn(BuildContext context) async {
+
     String email = emailController.text;
     String pass = passwordController.text;
 
@@ -66,22 +24,24 @@ class ManagerLoginScreen extends StatelessWidget {
       return;
     }
 
-    if (!isValidEmail(email) && !isValidPhoneNumber(email)){
+    if (!authServices.isValidEmail(email) && !authServices.isValidPhoneNumber(email)){
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Please enter valid email or phone number!"))
       );
       return;
     }
 
-    bool isAuthenticated = await login(email, pass);
+    bool isAuthenticated = await authServices.login(email, pass);
 
-    if (isAuthenticated) {
-      context.push("/dashboard");
-    } else {
+    if (!isAuthenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Invalid credentials')),
       );
+      return;
     }
+
+    context.push("/dashboard");
+
   }
 
   @override
@@ -93,12 +53,21 @@ class ManagerLoginScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // logo comes here 3:14
-                // SizedBox(height: 50.0),
-                Icon(Icons.lock, color: Colors.black87, size: 72.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.lock, color: Colors.black87, size: 54.0),
+                    Column(
+                      children: [
+                        SizedBox(height: 10,),
+                        Text("Manager Login", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),),
+                      ],
+                    ),
+                  ],
+                ),
 
                 // welcome back, you've been missed!
-                SizedBox(height: 15.0),
+                SizedBox(height: 20.0),
                 Text(
                   "Welcome back, you've been missed!",
                   style: TextStyle(
@@ -177,7 +146,7 @@ class ManagerLoginScreen extends StatelessWidget {
                         height: 60.0,
                         width: double.infinity,
                         child: TextButton(
-                          onPressed: () => onSubmitSignIn(context),
+                          onPressed: () => handleSubmitSignIn(context),
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.black,
                             shape: RoundedRectangleBorder(
