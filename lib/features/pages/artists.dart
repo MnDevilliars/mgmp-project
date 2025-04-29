@@ -1,80 +1,112 @@
 import 'package:flutter/material.dart';
+import '../../appcolors/app_colors.dart';
+import '../../components/artist_card.dart';
+import '../../handler/request_handler.dart';
+import '../../util/dropdown.dart';
 
-class Artists extends StatelessWidget {
-  const Artists({super.key});
+class ArtistsPage extends StatefulWidget {
+  const ArtistsPage({Key? key}) : super(key: key);
 
-  void refresh(){
-    // this method refresh the page
+  @override
+  State<ArtistsPage> createState() => _ArtistsPageState();
+}
+
+class _ArtistsPageState extends State<ArtistsPage> {
+  final RequestHandler requestHandler = RequestHandler();
+  List<dynamic> artistData = [];
+  String selectedStatus = 'All';
+  String selectedArtistType = 'All';
+  bool isLoading = false;
+
+  void fetchArtistData(String status, String artistType) async {
+    setState(() {
+      isLoading = true;
+      selectedStatus = status;
+      selectedArtistType = artistType;
+    });
+
+    final data = await requestHandler.artistsPageData(artistStatus: status, artistType: artistType);
+
+    setState(() {
+      artistData = data ?? [];
+      isLoading = false;
+    });
   }
 
-  void downloadExcel(){
-    // this method downloadExcel pdf
+  @override
+  void initState() {
+    super.initState();
+    fetchArtistData(selectedStatus, selectedArtistType);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white70,
-        body: SafeArea(
-          child: Container(
-            color: Colors.blue[600],
-            padding: EdgeInsets.fromLTRB(12, 12, 12, 12),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Color(0xffE6E6E6),
-                          radius: 25,
-                          child: Icon(Icons.person, color: Colors.black),
-                        ),
-                        SizedBox(width: 5,),
-                        Text(
-                          "Artists",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: refresh,
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.yellow[700],
-                            shape: CircleBorder (),
-                          ),
-                          child: Icon(Icons.refresh_outlined, size: 27, color: Colors.black,),
-                        ),
-                        TextButton(
-                          onPressed: downloadExcel,
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.yellow[700],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: Text(
-                            "Download Excel",
-                            style: const TextStyle(fontSize: 20.0, color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+      backgroundColor: Colors.transparent,
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Dropdown(
+                    options: [
+                      {'status': 'All'},
+                      {'status': 'Pending'},
+                      {'status': 'Approved'},
+                      {'status': 'Rejected'},
+                    ],
+                    keyInfo: 'status',
+                    label: "Select Status",
+                    onChanged: (value) {
+                      setState(() {
+                        selectedStatus = value;
+                      });
+                      fetchArtistData(value, selectedArtistType);
+                    },
+                  ),
                 ),
-                SizedBox(height: 5,),
-              ]
-            ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Dropdown(
+                    options: [
+                      {'artistType': 'All'},
+                      {'artistType': 'Individual artist'},
+                      {'artistType': 'Group artist'},
+                    ],
+                    keyInfo: 'artistType',
+                    label: "Artist Type",
+                    onChanged: (value) {
+                      setState(() {
+                        selectedArtistType = value;
+                      });
+                      fetchArtistData(selectedStatus, value);
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+          Expanded(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : artistData.isNotEmpty
+                ? ListView.builder(
+              itemCount: artistData.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: ArtistCard(artists: artistData[index]),
+                );
+              },
+            )
+                : const Center(child: Text("No Artists available")),
+          ),
+        ],
+      ),
     );
   }
 }

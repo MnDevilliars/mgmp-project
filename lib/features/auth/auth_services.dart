@@ -29,11 +29,12 @@ class AuthServices {
           })
       );
       final data = jsonDecode(response.body);
-
       if (response.statusCode == 200 && data['status']){
         SharedPrefrenceHandler pref = SharedPrefrenceHandler();
         final currentSessionToken = data['result'][0];
+        print(currentSessionToken);
         pref.setSessionToken(currentSessionToken);
+        print("7777777777777777777777777 ${pref.getSessionToken()} \n currentSessionToken $currentSessionToken");
         return true;
       }
     } catch(e,s){

@@ -1,53 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../appcolors/app_colors.dart';
 
 class MyCardButton extends StatelessWidget {
   final String label;
-  final String url;
+  final String navigateUrl;
+  final IconData icon;
+  final int count;
+  final String backgroundImageUrl;
 
-  const MyCardButton({Key? key, required this.label, required this.url})
-    : super(key: key);
+  const MyCardButton({
+    super.key,
+    required this.label,
+    required this.navigateUrl,
+    required this.icon,
+    required this.count,
+    required this.backgroundImageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.hardEdge,
-      child: InkWell(
-        splashColor: Colors.deepOrange,
-        onTap: () {
-          context.push(url);
-        },
-        child: Container(
-          color: AppColors.secondaryButton,
-          child: SizedBox(
-            width: 390,
-            height: 75,
-            child: Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
+    return GestureDetector(
+      onTap: () {
+        context.push(navigateUrl);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        height: 160,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 6,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Background image
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  backgroundImageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            // Overlay layer
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Colors.black.withOpacity(0.4),
+                ),
+              ),
+            ),
+            // Centered content
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.8), // Faded background
+                    ),
+                    child: Text(
+                      count.toString(),
+                      style: const TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(2.0, 2.0),
+                            blurRadius: 4.0,
+                            color: Colors.black54,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.event_note_outlined,
-                        color: AppColors.iconColor,
-                        size: 30.0,
-                      ),
-                      SizedBox(width: 5,),
+                        icon,
+                        size: 40, color:
+                        Colors.white,
+                        shadows: [
+                        Shadow(
+                          offset: Offset(2.0, 2.0),
+                          blurRadius: 4.0,
+                          color: Colors.black54,
+                        ),
+                      ],),
+                      const SizedBox(width: 10),
                       Text(
                         label,
-                        style: TextStyle(
-                          color: AppColors.boldText,
-                          fontSize: 18,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(2.0, 2.0),
+                              blurRadius: 4.0,
+                              color: Colors.black54,
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
