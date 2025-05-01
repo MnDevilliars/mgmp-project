@@ -270,5 +270,82 @@ class RequestHandler {
     }
   }
 
+  void deleteManager(String managerID) async {
+    SharedPrefrenceHandler pref = SharedPrefrenceHandler();
+    String sessionToken = await pref.getSessionToken();
+    try {
+      final response = await http.delete(
+          Uri.parse('$url/api/component/updateManager'),
+          headers: <String, String>{
+            'Xen-Origin': xen_origin,
+            'XEN-AUTHORIZATION': sessionToken,
+          },
+          body: jsonEncode({
+            "id": managerID,
+            "method": 2,
+          })
+      );
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 && responseData["status"]) {
+        return responseData["message"];
+      }
+    } catch (e, s) {
+      debugPrint("$e ,  $s");
+      debugPrint('Failed to delete manager with managerID: $managerID');
+    }
+  }
+
+  void deleteArtist(String artistID) async {
+    SharedPrefrenceHandler pref = SharedPrefrenceHandler();
+    String sessionToken = await pref.getSessionToken();
+    try {
+      final response = await http.delete(
+          Uri.parse('$url/api/component/addartist'),
+          headers: <String, String>{
+            'Xen-Origin': xen_origin,
+            'XEN-AUTHORIZATION': sessionToken,
+          },
+          body: jsonEncode({
+            "id": artistID,
+            "method": 2,
+          })
+      );
+      final responseData = jsonDecode(response.body);
+      if (response.statusCode == 200 && responseData["status"]) {
+        return responseData["message"];
+      }
+    } catch (e, s) {
+      debugPrint("$e ,  $s");
+      print('Failed to delete artist with artistID: $artistID');
+    }
+  }
+
+  void deleteEvent(String eventID) async {
+    SharedPrefrenceHandler pref = SharedPrefrenceHandler();
+    String sessionToken = await pref.getSessionToken();
+    try {
+      final response = await http.delete(
+          Uri.parse('$url/api/component/addevent'),
+          headers: <String, String>{
+            'Xen-Origin': xen_origin,
+            'XEN-AUTHORIZATION': sessionToken,
+          },
+          body: jsonEncode({
+            "id": eventID,
+            "method": 2,
+          })
+      );
+
+      final responseData = jsonDecode(response.body);
+      print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ $responseData");
+      if (response.statusCode == 200 && responseData["status"]) {
+        return responseData["message"];
+      }
+    } catch (e, s) {
+      debugPrint("$e ,  $s");
+      print('Failed to delete event with eventID: $eventID');
+    }
+  }
+
 }
 

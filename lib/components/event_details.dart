@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import '../model/event_model.dart';
 import '../util/infoRow.dart';
 import '../util/edu_button.dart';
+import '../handler/request_handler.dart';
+import '../util/delete_confirmation_dialogue.dart';
 
 class EventDetailsScreen extends StatelessWidget {
   final EventModel event;
+  final RequestHandler requestHandler = RequestHandler();
 
-  const EventDetailsScreen({super.key, required this.event});
+  EventDetailsScreen({super.key, required this.event});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,16 @@ class EventDetailsScreen extends StatelessWidget {
                       EduButton(
                         label: "Delete Event",
                         prefixIcon: Icons.delete_rounded,
-                        onPressed: () {},
+                        onPressed: () {
+                          showDeleteConfirmationDialog(
+                            context: context,
+                            title: "Confirm Deletion",
+                            message: "Do you want to delete the Event ?",
+                            onConfirm: () {
+                              requestHandler.deleteEvent(event.eventId.toString());
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

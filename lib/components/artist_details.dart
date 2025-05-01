@@ -3,11 +3,14 @@ import '../model/artists_model.dart';
 import 'package:go_router/go_router.dart';
 import '../util/infoRow.dart';
 import '../util/edu_button.dart';
+import '../handler/request_handler.dart';
+import '../util/delete_confirmation_dialogue.dart';
 
 class ArtistDetailsScreen extends StatelessWidget {
   final ArtistModel artist;
+  final RequestHandler requestHandler = RequestHandler();
 
-  const ArtistDetailsScreen({super.key, required this.artist});
+  ArtistDetailsScreen({super.key, required this.artist});
 
   @override
   Widget build(BuildContext context) {
@@ -199,9 +202,18 @@ class ArtistDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 15),
                       EduButton(
-                        label: "Delete Event",
+                        label: "Delete Artist",
                         prefixIcon: Icons.delete_rounded,
-                        onPressed: () {},
+                        onPressed: () {
+                          showDeleteConfirmationDialog(
+                            context: context,
+                            title: "Confirm Deletion",
+                            message: "Do you want to delete the Event ?",
+                            onConfirm: () {
+                              requestHandler.deleteArtist(artist.artistID.toString());
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

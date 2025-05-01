@@ -74,6 +74,7 @@ flutter:
   - assets/login_bgImages/mgmploginbg02.jpg
   - assets/login_bgImages/mgmploginbg03.webp
   - assets/login_bgImages/mgmploginbg04.jpg
+  - assets/images/mgmp-background.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

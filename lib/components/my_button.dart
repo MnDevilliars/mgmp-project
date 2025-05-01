@@ -19,20 +19,50 @@ class MyButton extends StatelessWidget {
     return SizedBox(
       height: 60.0,
       width: double.infinity,
-      child: TextButton(
-        onPressed: () {
-          onPressed();
-          context.push(url);
-        },
-        style: TextButton.styleFrom(
-          backgroundColor: AppColors.primaryButton,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6B8E23), Color(0xFF9ACD32)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              offset: Offset(0, 4),
+              blurRadius: 6,
+            ),
+          ],
         ),
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 20.0, color: Colors.greenAccent),
+        child: TextButton(
+          onPressed: () {
+            onPressed();
+            context.push(url);
+          },
+          style: TextButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 10.0),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 24.0,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: Offset(2.0, 2.0),
+                  blurRadius: 4.0,
+                  color: Colors.black54,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

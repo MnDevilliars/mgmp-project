@@ -3,6 +3,7 @@ import '../../components/my_textfield.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../handler/shared_pref_handler.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -22,7 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final ifscCodeController = TextEditingController();
   final bankAccountNumberController = TextEditingController();
 
-  final String backgroundImage = 'assets/login_bgImages/mgmploginbg01.jpg';
+  final String backgroundImage = 'assets/images/mgmp-background.jpg';
 
   Future<bool> signup(
     String firstName,
@@ -36,6 +37,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String accountNumber,
   ) async {
     try {
+      print("********************************************************");
+      print("$firstName  $middleName  $lastName  $phone  $email  $pass  $ifscCode  $accountNumber  $bankName");
+      print("********************************************************");
       final response = await http.post(
         Uri.parse('https://rc-mgmp.themeghalayanage.com/api/auth/sign_up'),
         headers: <String, String>{
@@ -48,17 +52,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
           "firstName": firstName,
           "middleName": middleName,
           "lastName": lastName,
-          "phoneNumber": phone,
+          "phoneNumber": int.parse(phone),
           "email": email,
           "dialCode": 91,
-          "password": pass,
+          "password": pass.toString(),
           "ifscCode": ifscCode,
-          "accountNumber": accountNumber,
+          "accountNumber": int.parse(accountNumber),
           "bankName": bankName,
         }),
       );
       final data = jsonDecode(response.body);
-      if (response.statusCode == 200 && data['status']) return true;
+      if (response.statusCode == 200 && data['status']){
+        SharedPrefrenceHandler pref = SharedPrefrenceHandler();
+        final currentSessionToken = data['result'][0];
+        print(currentSessionToken);
+        pref.setSessionToken(currentSessionToken);
+        print('account created successfully');
+        print('current session token: $currentSessionToken');
+        return true;
+      }
     } catch (e, s) {
       debugPrint("$e, $s");
     }
@@ -141,7 +153,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (isAuthenticated) {
       print("Account created successfully!");
-      context.push("/dashboard");
+      context.push("/admin-login");
     } else {
       ScaffoldMessenger.of(
         context,
@@ -160,9 +172,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Image.asset(backgroundImage, fit: BoxFit.cover),
             ),
 
-            Positioned.fill(
-              child: Container(color: Colors.green.withOpacity(0.2)),
-            ),
+            // Positioned.fill(
+            //   child: Container(color: Colors.green.withOpacity(0.2)),
+            // ),
 
             Center(
               child: SingleChildScrollView(
@@ -437,21 +449,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         height: 60.0,
                         width: double.infinity,
-                        child: TextButton(
-                          onPressed: onSubmitSignUp,
-                          style: TextButton.styleFrom(
-                            backgroundColor: Color(0xFF6B8E23),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF6B8E23), Color(0xFF9ACD32)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            elevation: 50, // This adds the shadow
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: Offset(0, 4),
+                                blurRadius: 6,
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            "Create your free account",
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: Colors.white,
+                          child: TextButton(
+                            onPressed: onSubmitSignUp,
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 10.0),
+                              elevation: 50,
+                            ),
+                            child: Text(
+                              "Create your free account",
+                              style: TextStyle(
+                                fontSize: 24.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(2.0, 2.0),
+                                    blurRadius: 4.0,
+                                    color: Colors.black54,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

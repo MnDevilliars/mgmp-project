@@ -17,7 +17,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   String? passwordErrorText;
 
 
-  final String backgroundImage = 'assets/login_bgImages/mgmploginbg01.jpg';
+  final String backgroundImage = 'assets/images/mgmp-background.jpg';
 
   void handleSubmitSignIn(BuildContext context) async {
     String email = emailController.text.trim();
@@ -88,9 +88,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             ),
 
             // Dark overlay
-            Positioned.fill(
-              child: Container(color: Colors.green.withOpacity(0.2)),
-            ),
+            // Positioned.fill(
+            //   child: Container(color: Colors.green.withOpacity(0.2)),
+            // ),
 
             Center(
               child: SingleChildScrollView(

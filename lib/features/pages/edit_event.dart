@@ -174,7 +174,6 @@ class _EditEventState extends State<EditEvent> {
       locationId
     ];
 
-
     requestHandler.postEventUpdate(updatedPayload);
   }
 
@@ -215,7 +214,7 @@ class _EditEventState extends State<EditEvent> {
       for (var artist in artistList) {
         artistTypeList.add({
           'fullName': artist.fullName,
-          'id': artist.id,
+          'id': artist.artistID,
         });
       }
     } else {

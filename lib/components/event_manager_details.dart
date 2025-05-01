@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import '../model/event_manager_model.dart';
 import '../util/infoRow.dart';
 import '../util/edu_button.dart';
+import '../handler/request_handler.dart';
+import '../util/delete_confirmation_dialogue.dart';
 
 class EventManagerDetailsScreen extends StatelessWidget {
   final ManagerModel eventManager;
+  final RequestHandler requestHandler = RequestHandler();
 
-  const EventManagerDetailsScreen({super.key, required this.eventManager});
+  EventManagerDetailsScreen({super.key, required this.eventManager});
 
   @override
   Widget build(BuildContext context) {
@@ -145,9 +148,18 @@ class EventManagerDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 15),
                       EduButton(
-                        label: "Delete Event",
+                        label: "Delete Manager",
                         prefixIcon: Icons.delete_rounded,
-                        onPressed: () {},
+                        onPressed: () {
+                          showDeleteConfirmationDialog(
+                            context: context,
+                            title: "Confirm Deletion",
+                            message: "Do you want to delete the Manager ?",
+                            onConfirm: () {
+                              requestHandler.deleteManager(eventManager.managerID.toString());
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),

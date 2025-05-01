@@ -1,5 +1,5 @@
 class ArtistModel {
-  final String id;
+  final String artistID;
   final String artistFirstName;
   final String artistMiddleName;
   final String artistLastName;
@@ -14,7 +14,7 @@ class ArtistModel {
   final int status;
 
   ArtistModel({
-    required this.id,
+    required this.artistID,
     required this.artistFirstName,
     required this.artistMiddleName,
     required this.artistLastName,
@@ -31,7 +31,7 @@ class ArtistModel {
 
   factory ArtistModel.fromJson(Map<String, dynamic> json) {
     return ArtistModel(
-      id: json['id'] ?? '',
+      artistID: json['id'] ?? '',
       artistFirstName: json['firstName']?.toString() ?? '~ Unknown',
       artistMiddleName: json['middleName']?.toString() ?? '~ Unknown',
       artistLastName: json['lastName']?.toString() ?? '~ Unknown',

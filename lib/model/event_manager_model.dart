@@ -1,4 +1,5 @@
 class ManagerModel {
+  final String managerID;
   final String managerFirstName;
   final String managerMiddleName;
   final String managerLastName;
@@ -10,6 +11,7 @@ class ManagerModel {
   final String status;
 
   ManagerModel({
+    required this.managerID,
     required this.managerFirstName,
     required this.managerMiddleName,
     required this.managerLastName,
@@ -23,6 +25,8 @@ class ManagerModel {
 
   factory ManagerModel.fromJson(Map<String, dynamic> json) {
     return ManagerModel(
+      managerID: (json['accountInfo'] != null && json['accountInfo'].isNotEmpty)
+          ? (json['accountInfo'][0]['_id']?['\$oid']) : '~ Unknown',
       managerFirstName:
           (json['accountInfo'] != null && json['accountInfo'].isNotEmpty)
               ? json['accountInfo'][0]['firstName'] ?? '~Unknown'
